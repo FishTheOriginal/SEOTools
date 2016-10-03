@@ -1,0 +1,137 @@
+<div>
+	<div ng-include="'menu.html'"></div>
+	<snap-dragger></snap-dragger>
+	<snap-content snap-opt-tap-to-close="false" class="bg-dark">
+		<a href="" snap-toggle="left" ng-click="menuOpen = !menuOpen">
+			<span class="menutoggle">
+				<i ng-hide="menuOpen" class="fa fa-bars fa-2x" ></i>
+				<i ng-show="menuOpen" class="fa fa-times fa-2x" ></i>
+			</span>
+		</a>
+		
+		<div class="fr">
+		<h2>SEO Tool <small>Ad Group keywords for Google Adwords ad relevance</small></h2>
+		</div>
+		<span class="glyphicon glyphicon-dashboard bg-fade"></span>
+		<div class="jumbotron">
+			<div class="container">
+				<h1>Ad Group Keywords Tool</h1>
+				
+				<div class="row">
+				
+					<div class="col-md-12">
+					
+						<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" ng-click="modalSetMode('phrasesImport')">Import Phrases</button>
+						<button type="button" class="btn btn-default" data-toggle="modal" data-target="#myModal" ng-click="modalSetMode('phrasesExport')">Export Phrases</button>
+					
+						<br />
+					
+						<label>
+							<input style="vertical-align: top;" type="checkbox" ng-model="settings.prependPlus">
+							Prepend "+" to keywords
+						</label>
+						
+						<label>
+							<input style="vertical-align: top;" type="checkbox" ng-model="settings.prependQuote">
+							Prepend "'" to keywords (for spreadsheet copy/paste)
+						</label>	
+						
+						<label>
+							<input style="vertical-align: top;" type="checkbox" ng-model="settings.singularIsPlural">
+							Singular == Plural
+						</label>
+						
+						<label>
+							<input style="vertical-align: top;" type="checkbox" ng-model="settings.spellingErrors">
+							Programer == Programmer
+						</label>
+						
+					</div>
+				
+					<div class="col-md-4">
+					
+						<h2>1. Copy/Paste keywords</h2>
+					
+						<div class="form-group">
+							<label for="comment">Keywords:</label>
+							<textarea class="form-control" ng-model="x.keywordsText" ng-change="keywordChange(); countKeywordUsage();" rows="1"></textarea>
+						</div>
+
+						<div>
+							<table class="table">
+								<tr>
+									<th>Total: {{x.keywords.length}}</th>
+									<th>Usage </th>
+								</tr>
+								<tr ng-repeat="keyword in x.keywords | orderBy: 'usage' track by $index">
+									<td>
+										<span class="fa fa-remove" ng-click="keywordDelete(keyword)" aria-hidden="true" style="cursor: pointer;"></span>
+										{{keyword.text}}
+									</td>
+									<td>{{keyword.usage}}</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+					<div class="col-md-8">
+					
+						<h2>2. Enter ad keywords</h2>
+					
+						<div class="row">
+							<div class="col-md-4" ng-repeat="phrase in x.phrases track by $index">
+								<div class="form-group">
+									<label for="comment">Phrase:</label>
+									<div class="input-group">
+										<input type="text" class="form-control" ng-model="phrase.text" placeholder="Ad keywords" ng-keyup="phraseKeyup(phrase, $event.which)" ng-blur="phraseChange(phrase)">
+										<span class="input-group-addon" data-toggle="modal" data-target="#myModal" ng-click="modalSetMode('phraseExportList', phrase)">
+											<span class="glyphicon glyphicon glyphicon-download" aria-hidden="true"></span>
+										</span>
+									</div>
+								</div>
+
+								<div class="slot">
+									<table class="table" ng-if="phrase.items">
+										<tr>
+											<th>Total: {{phrase.items.length}}</th>
+											<th>Usage</th>
+										</tr>
+										<tr ng-repeat="item in phrase.items | orderBy: '-keyword.usage' track by $index">
+											<td>
+												<span class="fa fa-remove" ng-click="keywordDelete(item.keyword)" aria-hidden="true" style="cursor: pointer;"></span>
+												<span ng-click="item.checked = !item.checked; countKeywordUsage();" ng-style="!item.checked && {'text-decoration':'line-through'}">
+													{{item.keyword.text}}
+												</span>
+											</td>
+											<td>{{item.keyword.usage}}</td>
+										</tr>
+									</table>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</snap-content>	
+	
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title" id="myModalLabel">Keywords</h4>
+				</div>
+				<div class="modal-body">
+					<textarea class="form-control" ng-model="modal.text" rows="15"></textarea>
+				</div>
+					<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					<button ng-if="modal.actionText != ''" type="button" class="btn btn-default" data-dismiss="modal" ng-click="modalActionExe()">{{modal.actionText}}</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</div>
